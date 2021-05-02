@@ -2,7 +2,7 @@ import os
 import keyboard
 from time import sleep
 
-from artes import texto
+from artes import *
 
 
 #Cria a matriz do menu
@@ -24,7 +24,7 @@ def menuPrincipal(opcao_menu):
     tela_menu[opcao_menu][0] = '>'
     tela_menu[opcao_menu][2] = '<'
 
-    titulo = texto()
+    titulo = titulo_programa()
     print(titulo)
 
     for linha in tela_menu:
@@ -211,11 +211,8 @@ def central_de_controle():
                             sleep(3)
                             break
 
-                
-
 
 #Programa Principal
-
 while True:
     (primeira_escolha, escolha_final) = central_de_controle()
         

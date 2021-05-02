@@ -1,4 +1,4 @@
-def texto():
+def titulo_programa():
     #Titulo do programa
     titulo = '''
 ███    ███  █████  ██████   ██████  ██████  ███████                                       
@@ -16,5 +16,4 @@ def texto():
                                                                                           
                                                                                           
 '''
-
     return titulo
