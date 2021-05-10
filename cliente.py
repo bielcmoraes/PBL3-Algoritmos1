@@ -9,7 +9,19 @@ def inclusaoCliente():
 
     nome = input('Nome do cliente: ').title()
     endereco = input('Endereço do cliente: ')
-    telefone = int(input('Telefone do cliente: '))
+    
+    while True:
+        try:
+            telefone = int(input('Telefone do cliente: '))
+
+        except (TypeError, ValueError):
+            print('Digite somente numeros')
+        
+        if len(str(telefone)) >= 10:
+            break
+        else:
+            print('Telefone inválido')
+
 
     cliente["Nome"] = nome
     cliente["Endereco"] = endereco
@@ -59,7 +71,7 @@ def editarClientes():
 
     if escolha == 1:
         print('Digite um novo nome para o cliente.')
-        novoNome = input('>>')
+        novoNome = input('>>').title()
 
         dados[codigoCliente]['Nome'] = novoNome
 
@@ -77,7 +89,18 @@ def editarClientes():
     
     elif escolha == 3:
         print('Digite um novo telefone para o cliente.')
-        novoTelefone = input('>>')
+        
+        while True:
+            try:
+                novoTelefone = input('>>')
+
+            except (TypeError, ValueError):
+                print('Digite somente numeros')
+            
+            if len(str(novoTelefone)) >= 10:
+                break
+            else:
+                print('Telefone inválido')
 
         dados[codigoCliente]['Telefone'] = novoTelefone
 
@@ -88,9 +111,13 @@ def excluirCliente():
 
     dados = lerArquivo('clientes.json')
 
-    codigoCliente = input('Informe o código do cliente: ')
-
-    del dados[codigoCliente]
+    while True:
+        try:
+            codigoCliente = input('Informe o código do cliente: ')
+            del dados[codigoCliente]
+            
+        except KeyError:
+            print('Digite um código válido.')
 
     with open('clientes.json', 'w') as arq: 
             json.dump(dados, arq) #Salva o dicionario atualizado no arquivo
@@ -106,9 +133,14 @@ def listarCliente():
 
     if escolha == 1:
 
-        codigoCliente = input('Informe o código do cliente: ')
+        while True:
+            try:
+                codigoCliente = input('Informe o código do cliente: ')
+                print(dados[codigoCliente])
+                break
 
-        print(dados[codigoCliente])
+            except (KeyError):
+                print('Digite um código válido.')
     
     elif escolha == 2:
 
