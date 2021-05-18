@@ -1,20 +1,20 @@
 
-def pecas():
+def catalogo_pecas():
 
-    peca = {}
-    
+    lista_pecas = [('Filtro de Polipropileno', (17,12)), 
+    ('Cartucho Carvão PHB', (64,6)), 
+    ('Bucha Difusora Completa', (52,12)),
+    ('Bica móvel',(19, None)),
+    ('Mangueira branca para purificador de água', (15, 6)),
+    ('Adaptador Conexão com Rosca', (29, 12)),
+    ('Cabeçote de Limpeza', (133, 18)),
+    ('Contágua Europa', (144, 12))]
 
-    peca['Filtro de Polipropileno': 17, 12]
-    peca['Cartucho Carvão PHB': 64, 6]
-    peca['Bucha Difusora Completa': 52, 12]
-    peca['Bica móvel': 19, None]
-    peca['Mangueira branca para purificador de água': 15, 6]
-    peca['Adaptador Conexão com Rosca': 29, 12]
-    peca['Cabeçote de Limpeza': 133, 18]
-    peca['Contágua Europa': 144, 12]
+    return lista_pecas
 
-    return peca
 
-from cliente import *
 
-excluirCliente()
+#inclusaoCliente()
+#listarCliente()
+#editarClientes()
+#excluirCliente()
