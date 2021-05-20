@@ -1,5 +1,11 @@
+#Importa bibliotecas
+import os
 import json
 from datetime import date
+
+#Importa funções em outros arquivos
+from arquivo_funcoes import *
+
 
 def inclusaoCliente():
 
@@ -7,8 +13,8 @@ def inclusaoCliente():
 
     codigo = codigoCliente() #Código de identificação do cliente
 
-    nome = input('Nome do cliente: ').title()
-    endereco = input('Endereço do cliente: ')
+    nome = input('Nome do cliente: ').title() #Nome do cliente
+    endereco = input('Endereço do cliente: ') #Endereço do cliente
     
     while True:
         try:
@@ -17,7 +23,7 @@ def inclusaoCliente():
         except (TypeError, ValueError):
             print('Digite somente numeros')
         
-        if len(str(telefone)) >= 10:
+        if len(str(telefone)) >= 9:
             break
         else:
             print('Telefone inválido')
@@ -27,17 +33,21 @@ def inclusaoCliente():
     cliente["Endereco"] = endereco
     cliente["Telefone"] = telefone
 
-    dados = lerArquivo('clientes_arq.json') #Recupera ai informações salvas no arquivo
+    nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
+
+    dados = lerArquivo(nome_arquivo) #Recupera ai informações salvas no arquivo
 
     dados[codigo] = cliente #Atualiza o dicionario recuperado no arquivo com o novo cliente
 
-    with open('clientes_arq.json', 'w') as arq: 
-        json.dump(dados, arq) #Salva o dicionario atualizado no arquivo
+    salvarArquivo(nome_arquivo, dados)
+
 
 def codigoCliente():
     contador_clientes = 0
 
-    clientes = lerArquivo('clientes_arq.json') #Lista com todos os códigos de identificação dos clientes
+    nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
+
+    clientes = lerArquivo(nome_arquivo) #Lista com todos os códigos de identificação dos clientes
     
     #Verifica a quantidade de clientes cadastrados no dia para gerar um novo código
     for i in clientes:
@@ -48,18 +58,13 @@ def codigoCliente():
     return codigo_cliente
 
 
-def lerArquivo (nome_arquivo):
-
-    #Ler o arquivos no formato .Json e retorna os dados convertidos nas respectivas estruturas de dados
-    with open(nome_arquivo, 'r') as arquivo:
-        dados_lidos = json.load(arquivo)
-        return dados_lidos
-
 def editarClientes():
 
     #Edita informações do cliente de acordo com o código
     
-    dados = lerArquivo('clientes_arq.json')
+    nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
+
+    dados = lerArquivo(nome_arquivo)
 
     codigoCliente = input('Informe o código do cliente: ')
 
@@ -74,18 +79,12 @@ def editarClientes():
         novoNome = input('>>').title()
 
         dados[codigoCliente]['Nome'] = novoNome
-
-        with open('clientes_arq.json', 'w') as arq: 
-            json.dump(dados, arq) #Salva o dicionario atualizado no arquivo
     
     elif escolha == 2:
         print('Digite um novo endereço para o cliente.')
         novoEndereco = input('>>')
 
         dados[codigoCliente]['Endereco'] = novoEndereco
-
-        with open('clientes_arq.json', 'w') as arq: 
-            json.dump(dados, arq) #Salva o dicionario atualizado no arquivo
     
     elif escolha == 3:
         print('Digite um novo telefone para o cliente.')
@@ -97,35 +96,43 @@ def editarClientes():
             except (TypeError, ValueError):
                 print('Digite somente numeros')
             
-            if len(str(novoTelefone)) >= 10:
+            if len(str(novoTelefone)) >= 9:
                 break
             else:
                 print('Telefone inválido')
 
         dados[codigoCliente]['Telefone'] = novoTelefone
 
-        with open('clientes_arq.json', 'w') as arq: 
-            json.dump(dados, arq) #Salva o dicionario atualizado no arquivo
+    salvarArquivo(nome_arquivo)
 
 def excluirCliente():
 
-    dados = lerArquivo('clientes_arq.json')
+    nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
+
+    dados = lerArquivo(nome_arquivo)
 
     while True:
         try:
             codigoCliente = input('Informe o código do cliente: ')
-            del dados[codigoCliente]
-            break
+
+            nome_cliente = dados[codigoCliente]['Nome']
+
+            print('Digite [1] para EXCLUIR o cliente', nome_cliente)
+            print('Ou digite QUALQUER NUMERO para cancelar a exclusão')
+            escolha = int(input('>>'))
+            if escolha == 1:
+                del dados[codigoCliente]
             
+            break
+
         except KeyError:
             print('Digite um código válido.')
 
-    with open('clientes_arq.json', 'w') as arq: 
-            json.dump(dados, arq) #Salva o dicionario atualizado no arquivo
+    salvarArquivo(nome_arquivo)
 
 def listarCliente():
 
-    dados = lerArquivo('clientes_arq.json')
+    dados = lerArquivo('cadastro_clientes.json')
 
     print('Digite [1] para ver as informações através do código')
     print('Digite [2] para ver todos os clientes cadastrados')

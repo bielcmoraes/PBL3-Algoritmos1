@@ -1,7 +1,7 @@
 import json
 from datetime import date
 from cliente import lerArquivo
-from main import *
+from pecas_catalogo import *
 
 def codigoManutencao(codigo_cliente):
     contadorManutencao = 0
@@ -44,15 +44,12 @@ def agendarManutencaoManual():
 
     print('Digite a data da manutenção')
     while True:
-        try:
-            data_manutencao = int(input('>>'))
-        
-        except(TypeError, ValueError):
 
-            print('Digite somente números')
+        data_manutencao = input('>>')
         
-        if 5 >= len(str(data_manutencao)) < 8:
+        if 5 > len(str(data_manutencao)) < 8 and data_manutencao.isdigit() == True:
             break
+
         else:
             print('Formato de data inválido')
     
@@ -89,7 +86,7 @@ def editarManutencao():
         dados[codigo_manutencao]['Data'] = nova_data
     
     elif escolha == 2:
-        novo_cliente = print('Digite o código do novo cliente: ')
+        novo_cliente = input('Digite o código do novo cliente: ')
 
         dados[codigo_manutencao]['Cliente'] = novo_cliente
     
@@ -136,21 +133,33 @@ def excluirManutencao():
             print('Digite um código válido.')
 
 
-# def realizarManutencao():
-
-#     manutencaoRealizada = {}
-
-#     dados = lerArquivo('manutencoes_agen_arq.json')
-
-#     while True:
-#         try:
-#             codigo_manutencao = input('Informe o código da manutenção: ')
-#             manutencao_realizada = dados[codigo_manutencao]
-#             del dados[codigo_manutencao]
-#             break
-            
-#         except KeyError:
-#             print('Digite um código válido.')
+def realizarManutencao():
     
-#     with open('manutencoes_reali_arq.json', 'w') as arq: 
-#         json.dump(dados, arq) #Salva a no arquivo de manutenções realizadas
+
+    dados = lerArquivo('manutencoes_agen_arq.json')
+    realizadas = lerArquivo('manutencoes_reali_arq.json')
+
+
+    while True:
+        try:
+            codigo_manutencao = input('Informe o código da manutenção: ')
+            manutencao_agendada = dados[codigo_manutencao]
+            break
+            
+        except KeyError:
+            print('Digite um código válido.')
+
+    realizadas[codigo_manutencao] = dados[codigo_manutencao]
+
+    del dados[codigo_manutencao]
+    
+    with open('manutencoes_reali_arq.json', 'w') as arq: 
+        json.dump(realizadas, arq) #Salva a no arquivo de manutenções realizadas
+    
+    with open('manutencoes_reali_arq.json', 'w') as arq: 
+        json.dump(manutencao_agendada, arq) #Salva a no arquivo de manutenções agendadas
+
+#agendarManutencaoManual()
+#editarManutencao()
+#excluirManutencao()
+#realizarManutencao()
