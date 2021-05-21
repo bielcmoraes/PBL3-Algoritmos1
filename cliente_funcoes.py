@@ -43,20 +43,22 @@ def inclusaoCliente():
 
 
 def codigoCliente():
-    contador_clientes = 0
 
     nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
 
-    clientes = lerArquivo(nome_arquivo) #Lista com todos os códigos de identificação dos clientes
+    clientes = lerArquivo(nome_arquivo) #dicionário com todos os códigos de identificação dos clientes
+    codigos_cadastrados = list(clientes.keys())
+
     
     #Verifica a quantidade de clientes cadastrados no dia para gerar um novo código
-    for i in clientes:
-        contador_clientes += 1
-    
-    codigo_cliente = str(contador_clientes) #Codigo de identificação do cliente
+    quantidade_clientes = len(codigos_cadastrados)
+
+    while str(quantidade_clientes) in codigos_cadastrados: #Garante que não exista códigos repetidos
+        quantidade_clientes += 1
+
+    codigo_cliente = str(quantidade_clientes) #Codigo de identificação do cliente
 
     return codigo_cliente
-
 
 def editarClientes():
 
