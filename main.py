@@ -21,7 +21,7 @@ def menu():
         print('Digite [3] para EXCLUIR manutenção')
         print('Digite [4] para REALIZAR manutenção')
         print('Digite [5] para LISTAR manutenções')
-        print('Digite [6] para IMPRIMIR manutenções')
+        print('Digite [6] para IMPRIMIR manutenções agendadas')
         print('Digite [0] para RETORNAR ao menu principal\n')
 
         escolha2 = int(input('>>'))

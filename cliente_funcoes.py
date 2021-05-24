@@ -47,9 +47,9 @@ def codigoCliente():
     nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
 
     clientes = lerArquivo(nome_arquivo) #dicionário com todos os códigos de identificação dos clientes
-    codigos_cadastrados = list(clientes.keys())
-
     
+    codigos_cadastrados = list(clientes.keys()) #Lista com códigos dos clientes cadastrados
+
     #Verifica a quantidade de clientes cadastrados no dia para gerar um novo código
     quantidade_clientes = len(codigos_cadastrados)
 
