@@ -1,3 +1,15 @@
+'''
+******************************************************************************************
+Autor: Gabriel Cordeiro Moraes
+Componente Curricular: EXA854 - MI - Algoritmos
+Concluido em: 31/05/2021
+Declaro que este código foi elaborado por mim de forma individual e não contém nenhum
+trecho de código de outro colega ou de outro autor, tais como provindos de livros e
+apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código
+de outra autoria que não a minha está destacado com uma citação para o autor e a fonte
+do código, e estou ciente que estes trechos não serão considerados para fins de avaliação.
+******************************************************************************************
+'''
 # Importa bibliotecas
 import json
 from datetime import date, datetime
@@ -33,7 +45,7 @@ def codigoManutencao(codigo_cliente):
 
     return codigo_manutencao
 
-def agendarManutencaoManual():
+def agendarManutencao():
 
     manutencoes = {}
     
@@ -79,6 +91,9 @@ def agendarManutencaoManual():
         else:
             print('Formato de data inválido')
     
+    print('Digite [1] para ativar a manutenção automática')
+    print('Digite [0] para continuar')
+    escolha = int(input('>>'))
 
     #Associa as informações coletadas as respectivas chaves
 
@@ -88,7 +103,12 @@ def agendarManutencaoManual():
     manutencoes['Validade_da_Peca'] = validade
     manutencoes['Preço'] = preco
 
-    manutencao_agendada[str(codigoManutencao(codigo_cliente))] = manutencoes #Adiciona a manutenção ao dicionário
+    if escolha == 0:
+        manutencao_agendada[str(codigoManutencao(codigo_cliente)) + 'M'] = manutencoes #Adiciona a manutenção ao dicionário
+    
+    elif escolha == 1:
+        manutencao_agendada[str(codigoManutencao(codigo_cliente)) + 'A'] = manutencoes #Adiciona a manutenção ao dicionário
+    
     salvarArquivo(nome_arquivo_manutencao, manutencao_agendada) #Salva a manutenção agendada na pasta correta
 
 def editarManutencao():
@@ -145,7 +165,7 @@ def editarManutencao():
 
         nova_peca = int(input('>>'))
 
-        catalogo = catalogo_pecas() #Peças cadastradas no arquivo main
+        catalogo = catalogo_pecas() #Peças cadastradas no arquivo de catálogo
     
         peca_escolhida = catalogo[nova_peca - 1] #Peça escolhida pelo cliente
 
@@ -168,7 +188,7 @@ def excluirManutencao():
         try:
             codigo_manutencao = input('Informe o código da manutenção: ')
 
-            print('Digite [1] para EXCLUIR a manutenção', codigoManutencao)
+            print('Digite [1] para EXCLUIR a manutenção', codigo_manutencao)
             print('Ou digite QUALQUER NUMERO para cancelar a exclusão')
             escolha = int(input('>>'))
             if escolha == 1:
@@ -178,6 +198,8 @@ def excluirManutencao():
             
         except KeyError:
             print('Digite um código válido.')
+    
+    salvarArquivo(nome_arquivo_manutencao, dados) #Salva a informação atualizada no arquivo
 
 
 def realizarManutencao():
@@ -202,8 +224,20 @@ def realizarManutencao():
     realizadas[codigo_manutencao] = dados[codigo_manutencao]
     realizadas[codigo_manutencao]['DataR'] = data_atual = date.today().strftime('%d/%m/%y') #String da data atual
 
-    del dados[codigo_manutencao]
+    #Agenda a mautenção automática
+    if codigo_manutencao[-1] == 'A':
+        automatica = {}
+
+        automatica['Data'] = somarData(data_atual, dados[codigo_manutencao]['Validade_da_Peca']) #Soma a validade da peça com a data que a ultima manutenção foi realizada
+        automatica['Cliente'] = dados[codigo_manutencao]['Cliente']
+        automatica['Nome_da_Peca'] = dados[codigo_manutencao]['Nome_da_Peca']
+        automatica['Validade_da_Peca'] = dados[codigo_manutencao]['Validade_da_Peca']
+        automatica['Preço'] = dados[codigo_manutencao]['Preço']
+        
+        dados[codigoManutencao(dados[codigo_manutencao]['Cliente']) + 'A'] = automatica #Adiciona a manutenção a lista de agendadas com um código novo
     
+    del dados[codigo_manutencao]
+
     salvarArquivo(nome_arquivo_manutencao_agendada, dados) #Salva as manutenções agendadas
     salvarArquivo(nome_arquivo_manutencao_realizada, realizadas)
 
@@ -214,6 +248,9 @@ def listarManutencoes():
     escolha = int(input('>>'))
 
     if escolha == 1:
+
+        os.system('cls') #Limpa a tela
+
         #Lista as manutenções agendadas organizadas por data.
 
         nome_arquivo_manutencao_agendada = saberPasta() + '\\manutencoes\\agenda_manutencao.json'
@@ -221,10 +258,23 @@ def listarManutencoes():
 
         agendadas_ordenadas = sorted(agendadas, key = lambda data: datetime.strptime(agendadas[data]['Data'],'%d/%m/%y').date()) # Ordena as chaves dos dicionários com base nos nomes do cliente
 
-        for i in agendadas_ordenadas:
-            print(i, agendadas[i])
+        if not agendadas_ordenadas:
+            print('Não existe manutenções agendadas')
+
+            input('\n\n\nPressione qualquer tecla para continuar.')
+            os.system('cls') #Limpa a tela
+        
+        else:
+            for i in agendadas_ordenadas:
+                print(i, agendadas[i])
+        
+            input('\n\n\nPressione qualquer tecla para continuar.')
+            os.system('cls') #Limpa a tela  
     
     elif escolha == 2:
+
+        os.system('cls') #Limpa a tela
+
         #Lista as manutenções realizadas organizadas por data
 
         nome_arquivo_manutencao_realizada = saberPasta() + '\\manutencoes\\realizada_manutencao.json'
@@ -232,8 +282,18 @@ def listarManutencoes():
 
         realizadas_ordenadas = sorted(realizadas, key = lambda data: datetime.strptime(realizadas[data]['Data'],'%d/%m/%y').date()) #Ordena as chaves dos dicionários com base nos nomes do cliente
 
-        for i in realizadas_ordenadas:
-            print(i, realizadas[i])
+        if not realizadas_ordenadas:
+            print('Não existe manutenções realizadas')
+
+            input('\n\n\nPressione qualquer tecla para continuar.')
+            os.system('cls') #Limpa a tela
+        
+        else:
+            for i in realizadas_ordenadas:
+                print(i, realizadas[i])
+            
+            input('\n\n\nPressione qualquer tecla para continuar.')
+            os.system('cls') #Limpa a tela
 
 def imprimirManutencoes():
 
@@ -247,9 +307,9 @@ def imprimirManutencoes():
     with open('lista_manutencoes.txt', 'w', encoding= 'utf8') as arq:
         for i in agendadas_ordenadas:
             arq.write(i + str(agendadas[i]).replace('{', '|').replace('}', '').replace(',', '|'))
+    
+    print('Um arquivo com a lista de manutenções agendadas foi gerado.')
 
+    input('\n\n\nPressione qualquer tecla para continuar.')
+    os.system('cls') #Limpa a tela
 
-#imprimirManutencoes()
-#agendarManutencaoManual()
-#listarManutencoes()
-#realizarManutencao()

@@ -1,3 +1,15 @@
+'''
+******************************************************************************************
+Autor: Gabriel Cordeiro Moraes
+Componente Curricular: EXA854 - MI - Algoritmos
+Concluido em: 31/05/2021
+Declaro que este código foi elaborado por mim de forma individual e não contém nenhum
+trecho de código de outro colega ou de outro autor, tais como provindos de livros e
+apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código
+de outra autoria que não a minha está destacado com uma citação para o autor e a fonte
+do código, e estou ciente que estes trechos não serão considerados para fins de avaliação.
+******************************************************************************************
+'''
 #Importa bibliotecas
 import os
 import json
@@ -105,13 +117,14 @@ def editarClientes():
 
         dados[codigoCliente]['Telefone'] = novoTelefone
 
-    salvarArquivo(nome_arquivo)
+    salvarArquivo(nome_arquivo,dados)
 
 def excluirCliente():
 
-    nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
+    nome_arquivo_cliente = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta clintes
+    nome_arquivo_manutencao = saberPasta() + '\\manutencoes\\agenda_manutencao.json' #Caminho para a pasta manutencao
 
-    dados = lerArquivo(nome_arquivo)
+    dados = lerArquivo(nome_arquivo_cliente)
 
     while True:
         try:
@@ -123,18 +136,24 @@ def excluirCliente():
             print('Ou digite QUALQUER NUMERO para cancelar a exclusão')
             escolha = int(input('>>'))
             if escolha == 1:
-                del dados[codigoCliente]
-            
+                manutencao_agendada = lerArquivo(nome_arquivo_manutencao)
+                for i in manutencao_agendada:
+                    if codigoCliente not in manutencao_agendada[i]['Cliente']:
+                        del dados[codigoCliente]
+                    else:
+                        print('Não é possivel excluir clientes com manutenções agendadas')
+                
             break
 
         except KeyError:
             print('Digite um código válido.')
 
-    salvarArquivo(nome_arquivo)
+    salvarArquivo(nome_arquivo_cliente,dados)
 
 def listarCliente():
+    nome_arquivo_cliente = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta clintes
 
-    dados = lerArquivo('cadastro_clientes.json')
+    dados = lerArquivo(nome_arquivo_cliente)
 
     print('Digite [1] para ver as informações através do código')
     print('Digite [2] para ver todos os clientes cadastrados')
@@ -142,11 +161,17 @@ def listarCliente():
     escolha = int(input('>>'))
 
     if escolha == 1:
+        
+        os.system('cls') #Limpa a tela
 
         while True:
             try:
                 codigoCliente = input('Informe o código do cliente: ')
+                print('\n')
                 print(dados[codigoCliente])
+                print('\n')
+                input('Pressione qualquer tecla para continuar.')
+                os.system('cls') #Limpa a tela
                 break
 
             except (KeyError):
@@ -154,7 +179,12 @@ def listarCliente():
     
     elif escolha == 2:
 
+        os.system('cls') #Limpa a tela
+
         clientesOrdenados = sorted(dados, key = lambda nome: dados[nome]['Nome']) # Ordena as chaves dos dicionários com base nos nomes do cliente
 
         for i in clientesOrdenados:
             print(i,dados[i])
+        
+        input('\n\n\nPressione qualquer tecla para continuar.')
+        os.system('cls') #Limpa a tela

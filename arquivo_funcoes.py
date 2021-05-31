@@ -1,5 +1,20 @@
+'''
+******************************************************************************************
+Autor: Gabriel Cordeiro Moraes
+Componente Curricular: EXA854 - MI - Algoritmos
+Concluido em: 31/05/2021
+Declaro que este código foi elaborado por mim de forma individual e não contém nenhum
+trecho de código de outro colega ou de outro autor, tais como provindos de livros e
+apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código
+de outra autoria que não a minha está destacado com uma citação para o autor e a fonte
+do código, e estou ciente que estes trechos não serão considerados para fins de avaliação.
+******************************************************************************************
+'''
+# Importa bibliotecas
 import json
 import os
+from datetime import datetime, timedelta
+
 def lerArquivo(nome_arquivo):
     while True:
         #Ler o arquivos no formato .Json e retorna os dados convertidos nas respectivas estruturas de dados
@@ -21,10 +36,10 @@ def saberPasta():
     pasta_atual = os.getcwd()
     os.system('cls')
     
-    return pasta_atual
+    return pasta_atual + '\\dados'
 
 def balancoMensal():
-    print('Informe um MÊS e um ANO')
+    print('Informe um MÊS e um ANO (mm/aa)')
 
     while True:
         data = input('>>')
@@ -51,16 +66,32 @@ def balancoMensal():
     print('\nO valor total é: ', total)
 
     print('\nDigite [1] para imprimir o balanço')
-    print('\n Digite [0] para sair')
+    print('\n Digite [0] para retornar ao menu.')
     escolha = int(input('>>'))
 
     if escolha == 1:
-        nome_arq_balanco = 'balanco_' + data[:2] + data[3:]
+        nome_arq_balanco = saberPasta() + '\\balanco\\balanco_' + data[:2] + data[3:] + '.txt'
         with open(str(nome_arq_balanco), 'w', encoding= 'utf8') as arq:
             for i in balanco_mes:
                 arq.write((str(i) + '\n\n').replace(',','|').replace('{','').replace('}','').replace('[', '').replace(']',''))
             
             arq.write(str('Total mensal: R$ ')+str(total))
 
-        
 
+def somarData(data_str, meses_somados):
+    data = datetime.strptime(data_str,'%d/%m/%y').date() #Converte a data em string para o tipo date
+
+    if meses_somados == None: #Peças com validade indefinida não serão alteradas
+        return None
+    
+    elif meses_somados == 12:
+        dias_somados = 365
+    
+    else:
+        dias_somados = meses_somados * 30
+    
+    data_somada = data + timedelta(days= dias_somados)
+    data_somada_str = data_somada.strftime('%d/%m/%y')
+    
+    return data_somada_str
+somarData('24/05/21', 12)
