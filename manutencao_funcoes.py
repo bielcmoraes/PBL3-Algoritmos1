@@ -11,6 +11,7 @@ do código, e estou ciente que estes trechos não serão considerados para fins 
 ******************************************************************************************
 '''
 # Importa bibliotecas
+import os
 import json
 from datetime import date, datetime
 
@@ -40,8 +41,7 @@ def codigoManutencao(codigo_cliente):
 
     while codigoManutencao in manutencoes_cadastradas:
         contador_diario += 1
-    
-    codigo_manutencao = data_atual + codigo_cliente +'-'+ str(contador_diario) #codigo da manutenção atualizado
+        codigo_manutencao = data_atual + codigo_cliente +'-'+ str(contador_diario) #codigo da manutenção atualizado
 
     return codigo_manutencao
 
@@ -58,7 +58,13 @@ def agendarManutencao():
 
     codigo_cliente = input('Digite o código do cliente que deseja agendar a manutenção: ')
 
-    if codigo_cliente in clientes.keys():
+    while codigo_cliente not in clientes.keys():
+        os.system('cls') #Limpa o terminal
+        print('Código inválido')
+        codigo_cliente = input('Digite o código do cliente que deseja agendar a manutenção: ')
+    
+    else:
+        os.system('cls') #Limpa o terminal
         print('Escolha a peça que deseja realizar manutenção\n')
 
         print('Digite [1] para Filtro de Polipropileno')
@@ -69,6 +75,7 @@ def agendarManutencao():
         print('Digite [6] para Adaptador Conexão com Rosca')
         print('Digite [7] para Cabeçote de Limpeza')
         print('Digite [8] para Contágua Europa\n')
+
 
     
     peca = int(input('>>'))
@@ -85,11 +92,13 @@ def agendarManutencao():
 
         data_manutencao = str(input('>>'))
         
-        if data_manutencao[2] == '/' and data_manutencao[5] =='/' and data_manutencao[:2].isdigit() and data_manutencao[3:5].isdigit and data_manutencao[6:].isdigit():
+        if len(data_manutencao) == 8 and data_manutencao[2] == '/' and data_manutencao[5] =='/' and data_manutencao[:2].isdigit() and data_manutencao[3:5].isdigit and data_manutencao[6:].isdigit():
             break
 
         else:
+            os.system('cls') #Limpa o terminal
             print('Formato de data inválido')
+            print('Digite a data da manutenção (dd/mm/aa)')
     
     print('Digite [1] para ativar a manutenção automática')
     print('Digite [0] para continuar')
@@ -222,7 +231,10 @@ def realizarManutencao():
             print('Digite um código válido.')
 
     realizadas[codigo_manutencao] = dados[codigo_manutencao]
-    realizadas[codigo_manutencao]['DataR'] = data_atual = date.today().strftime('%d/%m/%y') #String da data atual
+
+    data_atual = date.today().strftime('%d/%m/%y') #String da data atual
+    
+    realizadas[codigo_manutencao]['DataR'] = data_atual 
 
     #Agenda a mautenção automática
     if codigo_manutencao[-1] == 'A':
@@ -256,7 +268,7 @@ def listarManutencoes():
         nome_arquivo_manutencao_agendada = saberPasta() + '\\manutencoes\\agenda_manutencao.json'
         agendadas = lerArquivo(nome_arquivo_manutencao_agendada)
 
-        agendadas_ordenadas = sorted(agendadas, key = lambda data: datetime.strptime(agendadas[data]['Data'],'%d/%m/%y').date()) # Ordena as chaves dos dicionários com base nos nomes do cliente
+        agendadas_ordenadas = sorted(agendadas, key = lambda data: datetime.strptime(agendadas[data]['Data'],'%d/%m/%y').date()) #Ordena as chaves dos dicionários com base nos nomes do cliente
 
         if not agendadas_ordenadas:
             print('Não existe manutenções agendadas')
@@ -280,7 +292,7 @@ def listarManutencoes():
         nome_arquivo_manutencao_realizada = saberPasta() + '\\manutencoes\\realizada_manutencao.json'
         realizadas = lerArquivo(nome_arquivo_manutencao_realizada)
 
-        realizadas_ordenadas = sorted(realizadas, key = lambda data: datetime.strptime(realizadas[data]['Data'],'%d/%m/%y').date()) #Ordena as chaves dos dicionários com base nos nomes do cliente
+        realizadas_ordenadas = sorted(realizadas, key = lambda data: datetime.strptime(realizadas[data]['DataR'],'%d/%m/%y').date()) #Ordena as chaves dos dicionários com base nos nomes do cliente
 
         if not realizadas_ordenadas:
             print('Não existe manutenções realizadas')
@@ -302,11 +314,11 @@ def imprimirManutencoes():
     nome_arquivo_manutencao_agendada = saberPasta() + '\\manutencoes\\agenda_manutencao.json'
     agendadas = lerArquivo(nome_arquivo_manutencao_agendada)
 
-    agendadas_ordenadas = sorted(agendadas, key = lambda data: datetime.strptime(agendadas[data]['Data'],'%d/%m/%y').date()) # Ordena as chaves dos dicionários com base nos nomes do cliente
+    agendadas_ordenadas = sorted(agendadas, key = lambda data: datetime.strptime(agendadas[data]['Data'],'%d/%m/%y').date()) # Ordena as chaves dos dicionários com base na data
 
     with open('lista_manutencoes.txt', 'w', encoding= 'utf8') as arq:
         for i in agendadas_ordenadas:
-            arq.write(i + str(agendadas[i]).replace('{', '|').replace('}', '').replace(',', '|'))
+            arq.write(i + str(agendadas[i]).replace('{', '|').replace('}', '').replace(',', '|') + '\n')
     
     print('Um arquivo com a lista de manutenções agendadas foi gerado.')
 

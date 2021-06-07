@@ -18,6 +18,23 @@ from datetime import date
 #Importa funções em outros arquivos
 from arquivo_funcoes import *
 
+def codigoCliente():
+    
+    nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
+
+    clientes = lerArquivo(nome_arquivo) #dicionário com todos os códigos de identificação dos clientes
+    
+    codigos_cadastrados = list(clientes.keys()) #Lista com códigos dos clientes cadastrados
+
+    #Verifica a quantidade de clientes cadastrados no dia para gerar um novo código
+    quantidade_clientes = len(codigos_cadastrados)
+
+    while str(quantidade_clientes) in codigos_cadastrados: #Garante que não exista códigos repetidos
+        quantidade_clientes += 1
+
+    codigo_cliente = str(quantidade_clientes) #Codigo de identificação do cliente
+
+    return codigo_cliente
 
 def inclusaoCliente():
 
@@ -53,25 +70,6 @@ def inclusaoCliente():
 
     salvarArquivo(nome_arquivo, dados)
 
-
-def codigoCliente():
-
-    nome_arquivo = saberPasta() + '\\clientes\\cadastro_clientes.json' #Caminho para a pasta correta
-
-    clientes = lerArquivo(nome_arquivo) #dicionário com todos os códigos de identificação dos clientes
-    
-    codigos_cadastrados = list(clientes.keys()) #Lista com códigos dos clientes cadastrados
-
-    #Verifica a quantidade de clientes cadastrados no dia para gerar um novo código
-    quantidade_clientes = len(codigos_cadastrados)
-
-    while str(quantidade_clientes) in codigos_cadastrados: #Garante que não exista códigos repetidos
-        quantidade_clientes += 1
-
-    codigo_cliente = str(quantidade_clientes) #Codigo de identificação do cliente
-
-    return codigo_cliente
-
 def editarClientes():
 
     #Edita informações do cliente de acordo com o código
@@ -80,7 +78,16 @@ def editarClientes():
 
     dados = lerArquivo(nome_arquivo)
 
-    codigoCliente = input('Informe o código do cliente: ')
+    while True:
+        try:
+            codigoCliente = input('Informe o código do cliente: ')
+            testar_código = dados[codigoCliente]
+            break
+        
+        except KeyError:
+
+            os.system('cls')
+            print('Código inválido')
 
     print('Digite [1] para alterar o NOME do cliente.')
     print('Digite [2] para alterar o ENDEREÇO do cliente.')
@@ -128,18 +135,23 @@ def excluirCliente():
 
     while True:
         try:
-            codigoCliente = input('Informe o código do cliente: ')
+            codigoCliente = input('Informe o código do cliente: ') #Código do Cluiente a ser excluido 
 
             nome_cliente = dados[codigoCliente]['Nome']
 
+            #Verifica se o usuario quer realmente excluir o cliente informado 
             print('Digite [1] para EXCLUIR o cliente', nome_cliente)
             print('Ou digite QUALQUER NUMERO para cancelar a exclusão')
             escolha = int(input('>>'))
+
             if escolha == 1:
+
+                # Verifica o código informado está vinculado a uma manutenção
                 manutencao_agendada = lerArquivo(nome_arquivo_manutencao)
+
                 for i in manutencao_agendada:
                     if codigoCliente not in manutencao_agendada[i]['Cliente']:
-                        del dados[codigoCliente]
+                        del dados[codigoCliente] #Remove o cliente do dicionário
                     else:
                         print('Não é possivel excluir clientes com manutenções agendadas')
                 
@@ -175,14 +187,17 @@ def listarCliente():
                 break
 
             except (KeyError):
+                os.system('cls')
                 print('Digite um código válido.')
     
     elif escolha == 2:
 
         os.system('cls') #Limpa a tela
 
-        clientesOrdenados = sorted(dados, key = lambda nome: dados[nome]['Nome']) # Ordena as chaves dos dicionários com base nos nomes do cliente
+        # Ordena as chaves dos dicionários com base nos nomes do cliente
+        clientesOrdenados = sorted(dados, key = lambda nome: dados[nome]['Nome'])
 
+        #Printa a lista ordenada elemento a elemento 
         for i in clientesOrdenados:
             print(i,dados[i])
         
